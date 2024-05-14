@@ -116,7 +116,7 @@ void jShell::ParseCommand(){
         u_mins = (int)PIT::TimeSinceBoot/100/60;
         u_hours = (int)PIT::TimeSinceBoot/100/60/60;
         u_secs = (int)PIT::TimeSinceBoot/100 - (u_mins*60) - (u_hours*60*60);
-        Print("OS: The J Operating System"); Print(OS_VERSION);
+        Print("OS: The J Operating System "); Print(OS_VERSION);
         Print("\nKernel: jKern "); Print(KERNEL_VERSION);
         Print("\nUptime: "); Print(ToString(u_hours)); Print(" hours, "); Print(ToString(u_mins)); Print(" mins, "); Print(ToString(u_secs)); Print(" secs, ");
         Print("\nShell: jShell "); Print(SHELL_VERSION);

@@ -6,7 +6,12 @@
 #include "Memory/Heap.h"
 #include "Scheduling/PIT/PIT.h"
 
-KernelInfo kernelInfo; 
+KernelInfo kernelInfo;
+KernelStuff* MainKernel;
+
+KernelStuff::KernelStuff(){
+    BootState = 0;
+}
 
 void PrepareMemory(BootInfo* BootInfo){
     uint64_t mMapEntries = BootInfo->MemoryMapSize / BootInfo->MemoryMapDescriptorSize;
@@ -93,9 +98,16 @@ void StartupStatusMessage(const char* Type, const char* Text, int Status){
     }
 }
 
+void KernelStuff::Loop(){
+    asm("hlt");
+}
+
 BasicRenderer r = BasicRenderer(NULL, NULL);
 jShell s = jShell();
+KernelStuff k = KernelStuff();
 KernelInfo InitializeKernel(BootInfo* BootInfo){
+    MainKernel = &k;
+    MainKernel->BootState = 1;
     r = BasicRenderer(BootInfo->BootFramebuffer, BootInfo->PSF1Font);
     GlobalRenderer = &r; GlobalRenderer->Clear();
     StartupStatusMessage("INFO", "Initialized Renderer.", 0);
@@ -120,14 +132,15 @@ KernelInfo InitializeKernel(BootInfo* BootInfo){
     PIT::SetDivisor(1000);
     StartupStatusMessage("INFO", "Initialized PIT.", 0);
 
-    GlobalRenderer->Print("\n");
+    MainKernel->BootState = 2;
+    /*GlobalRenderer->Print("\n");
     StartupStatusMessage("INFO", "Waiting 3 seconds to continue...", 2);
     PIT::Sleepd(1);
     StartupStatusMessage("INFO", "Waiting 2 seconds to continue...", 2);
     PIT::Sleepd(1);
     StartupStatusMessage("INFO", "Waiting 1 seconds to continue...", 2);
-    PIT::Sleepd(1);
-    GlobalRenderer->Print("\n\nWelcome to "); GlobalRenderer->Print("jOS", COLOR_LIGHT_BLUE); GlobalRenderer->Print("!\n\n");
+    PIT::Sleepd(1);*/
+    GlobalRenderer->Print("\nWelcome to "); GlobalRenderer->Print("jOS", COLOR_LIGHT_BLUE); GlobalRenderer->Print("!\n\n");
     GlobalRenderer->Print("jOS Version "); GlobalRenderer->Print(KERNEL_VERSION);
     GlobalRenderer->Print("\nLicensed under GPL3; For more infos, type 'license';\n<https://www.gnu.org/licenses/gpl-3.0.en.html>\n\n");
     PIT::Sleepd(1);
@@ -147,6 +160,7 @@ KernelInfo InitializeKernel(BootInfo* BootInfo){
 
     StartupStatusMessage("INFO", "Done.", 0);
     GlobalRenderer->Print("\nBoot took: "); GlobalRenderer->Print(ToString(PIT::TimeSinceBoot/100)); GlobalRenderer->Print(" seconds.");
+    MainKernel->BootState = 3;
     PIT::Sleepd(1);
 
     return kernelInfo;

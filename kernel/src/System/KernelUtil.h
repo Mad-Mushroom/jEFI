@@ -34,4 +34,13 @@ struct KernelInfo {
     PageTableManager* KernelPageTableManager;
 };
 
+class KernelStuff {
+public:
+	KernelStuff();
+	void Loop();
+	int BootState; // 1 - PreBoot, 2 - Boot, 3 - Boot-Shell-Transition, 4 - Shell
+};
+
+extern KernelStuff* MainKernel;
+
 KernelInfo InitializeKernel(BootInfo* BootInfo);

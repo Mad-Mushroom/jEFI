@@ -43,6 +43,9 @@ class BasicRenderer{
     void DrawOverlayMouseCursor(uint8_t* MouseCursor, Point Position, uint32_t Colour);
     void ClearMouseCursor(uint8_t* MouseCursor, Point Position);
     bool MouseDrawn;
+    void TickCursor();
+    private:
+    bool TextCursorShown;
 };
 
 extern BasicRenderer* GlobalRenderer;

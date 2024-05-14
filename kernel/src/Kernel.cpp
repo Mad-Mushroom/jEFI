@@ -7,6 +7,6 @@ extern "C" void KernelStart(BootInfo* BootInfo){
     MainShell->Start();
     MainShell->Print("\n");
     while(true){
-        asm ("hlt");
+        MainKernel->Loop();
     }
 }

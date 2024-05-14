@@ -174,3 +174,16 @@ void BasicRenderer::PutChar(char Char)
         CursorPosition.Y += 16;
     }
 }
+
+void BasicRenderer::TickCursor(){
+    if(TextCursorShown){
+        CursorPosition.X++;
+        ClearChar();
+        TextCursorShown = false;
+    }
+    if(!TextCursorShown){
+        Print("_");
+        CursorPosition.X--;
+        TextCursorShown = true;
+    }
+}
