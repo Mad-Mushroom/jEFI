@@ -42,6 +42,27 @@ const char* ToString(uint64_t Value){
     return UIntToStringOutput;
 }
 
+const char* ToString(unsigned int value){
+    uint8_t Size;
+    uint64_t SizeTest = value;
+    while (SizeTest / 10 > 0){
+        SizeTest /= 10;
+        Size++;
+    }
+
+    uint8_t Index = 0;
+    while(value / 10 > 0){
+        uint8_t Remainder = value % 10;
+        value /= 10;
+        UIntToStringOutput[Size - Index] = Remainder + '0';
+        Index++;
+    }
+    uint8_t Remainder = value % 10;
+    UIntToStringOutput[Size - Index] = Remainder + '0';
+    UIntToStringOutput[Size + 1] = 0; 
+    return UIntToStringOutput;
+}
+
 char HexToStringOutput[128];
 const char* ToHexString(uint64_t Value){
     uint64_t* ValuePtr = &Value;

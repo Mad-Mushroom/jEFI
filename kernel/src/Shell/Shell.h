@@ -4,6 +4,10 @@
 #include "../UserInput/KBScancodeTranslation.h"
 #include "../Misc/CStr.h"
 #include "../System/Memory/Memory.h"
+#include "../System/KernelUtil.h"
+#include "../System/Scheduling/PIT/PIT.h"
+
+#define SHELL_VERSION "0.1.2"
 
 class jShell {
 public:

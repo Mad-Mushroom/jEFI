@@ -74,7 +74,9 @@ void PrepareACPI(BootInfo* BootInfo){
 }
 
 void StartupStatusMessage(const char* Type, const char* Text, int Status){
-    GlobalRenderer->Print("[ "); GlobalRenderer->Print(Type, COLOR_GRAY); GlobalRenderer->Print(" ] "); GlobalRenderer->Print(Text);
+    GlobalRenderer->Print("[ "); GlobalRenderer->Print(Type, COLOR_GRAY); GlobalRenderer->Print(" ] ");
+    GlobalRenderer->Print("[ "); GlobalRenderer->Print(ToString(PIT::TimeSinceBoot/100), COLOR_DARK_GRAY); GlobalRenderer->Print(" ] ");
+    GlobalRenderer->Print(Text);
     if(Status >= 0){
         if(Status == 0){
             GlobalRenderer->CursorPosition.X = (GlobalRenderer->TargetFramebuffer->Width - 80);
@@ -144,7 +146,8 @@ KernelInfo InitializeKernel(BootInfo* BootInfo){
     StartupStatusMessage("INFO", "Initialized Shell.", 0);
 
     StartupStatusMessage("INFO", "Done.", 0);
-    GlobalRenderer->Print("Boot took: "); GlobalRenderer->Print(ToString(PIT::TimeSinceBoot/100)); GlobalRenderer->Print(" seconds.");
+    GlobalRenderer->Print("\nBoot took: "); GlobalRenderer->Print(ToString(PIT::TimeSinceBoot/100)); GlobalRenderer->Print(" seconds.");
+    PIT::Sleepd(1);
 
     return kernelInfo;
 }

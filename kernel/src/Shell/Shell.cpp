@@ -20,25 +20,25 @@ void jShell::DrawTitlebar(){
 
 void jShell::Start(){
     GlobalRenderer->Clear();
-    GlobalRenderer->ClearColour = COLOR_LIGHT_GRAY;
+    //GlobalRenderer->ClearColour = COLOR_DARK_GRAY;
     this->DrawTitlebar();
     GlobalRenderer->CursorPosition = {0, GlobalRenderer->TargetFramebuffer->Height-16};
     for(int i=0; i<GlobalRenderer->TargetFramebuffer->Width/8; i++){
-        GlobalRenderer->Print("\a", COLOR_LIGHT_GRAY);
+        GlobalRenderer->Print("\a", COLOR_DARK_GRAY);
     }
     GlobalRenderer->CursorPosition = {0, GlobalRenderer->TargetFramebuffer->Height-16};
-    GlobalRenderer->Colour = COLOR_BLACK;
-    GlobalRenderer->Print("jShell> ", COLOR_BLACK);
+    GlobalRenderer->Colour = COLOR_WHITE;
+    GlobalRenderer->Print("jShell> ", COLOR_WHITE);
 }
 
 void jShell::RunShell(){
     GlobalRenderer->CursorPosition = {0, GlobalRenderer->TargetFramebuffer->Height-16};
     for(int i=0; i<GlobalRenderer->TargetFramebuffer->Width/8; i++){
-        GlobalRenderer->Print("\a", COLOR_LIGHT_GRAY);
+        GlobalRenderer->Print("\a", COLOR_DARK_GRAY);
     }
     GlobalRenderer->CursorPosition = {0, GlobalRenderer->TargetFramebuffer->Height-16};
-    GlobalRenderer->Colour = COLOR_BLACK;
-    GlobalRenderer->Print("jShell> ", COLOR_BLACK);
+    GlobalRenderer->Colour = COLOR_WHITE;
+    GlobalRenderer->Print("jShell> ", COLOR_WHITE);
 }
 
 void jShell::Print(const char* String, uint32_t Color){
@@ -107,20 +107,35 @@ void jShell::ParseCommand(){
             Print(cmd_argv[i]);
             Print(" ");
         }
-        //PrintString("\n");
-        //Shell_bufferSize = 0; memset(arguments, 0, sizeof(arguments));
-        //return;
     }
-    Print("Index: ");
-    Print(ToString(index));
-    Print("\nIndex2: ");
-    Print(ToString(index2));
-    Print("\nArgs: ");
-    Print(ToString(args));
-    Print("\nCmd_Argv0: ");
-    Print(cmd_argv[0]);
-    Print("\nCmd_Argv1: ");
-    Print(cmd_argv[1]);
+
+    else if(strcmp(cmd_argv[0], "info")){
+        unsigned int u_hours = 0;
+        unsigned int u_mins = 0;
+        unsigned int u_secs = 0;
+        u_mins = (int)PIT::TimeSinceBoot/100/60;
+        u_hours = (int)PIT::TimeSinceBoot/100/60/60;
+        u_secs = (int)PIT::TimeSinceBoot/100 - (u_mins*60) - (u_hours*60*60);
+        Print("OS: The J Operating System"); Print(OS_VERSION);
+        Print("\nKernel: jKern "); Print(KERNEL_VERSION);
+        Print("\nUptime: "); Print(ToString(u_hours)); Print(" hours, "); Print(ToString(u_mins)); Print(" mins, "); Print(ToString(u_secs)); Print(" secs, ");
+        Print("\nShell: jShell "); Print(SHELL_VERSION);
+        Print("\nResolution: "); Print(ToString(GlobalRenderer->TargetFramebuffer->Width)); Print("x"); Print(ToString(GlobalRenderer->TargetFramebuffer->Height));
+        Print("\n\n");
+        Print("\a\a", COLOR_BLACK); Print("\a\a", COLOR_CYAN); Print("\a\a", COLOR_LIGHT_RED);
+        Print("\a\a", COLOR_DARK_GRAY); Print("\a\a", COLOR_MAGENTA); Print("\a\a", COLOR_BLUE);
+        Print("\a\a", COLOR_GRAY); Print("\a\a", COLOR_YELLOW); Print("\a\a", COLOR_GREEN);
+        Print("\a\a", COLOR_LIGHT_GRAY); Print("\a\a", COLOR_LIGHT_BLUE); Print("\a\a", COLOR_RED);
+        Print("\a\a", COLOR_BROWN); Print("\a\a", COLOR_LIGHT_GREEN); Print("\a\a", COLOR_WHITE);
+    }
+
+    else if(!strcmp(cmd_argv[0], "")){
+        Print("Don't know what you mean...");
+    }
+
+    Memset(&CommandBuffer, 0, sizeof(CommandBuffer));
+    CommandBufferSize = 0;
+    Memset(&cmd_argv, 0, sizeof(cmd_argv));
 }
 
 void jShell::HandleKeyPress(uint8_t Scancode){
