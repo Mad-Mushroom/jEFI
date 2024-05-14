@@ -4,8 +4,8 @@
 
 extern "C" void KernelStart(BootInfo* BootInfo){
     KernelInfo KernelInfo = InitializeKernel(BootInfo);
-    MainShell->Start();
-    MainShell->Print("\n");
+    /*MainShell->Start();
+    MainShell->Print("\n");*/
     while(true){
         asm ("hlt");
     }

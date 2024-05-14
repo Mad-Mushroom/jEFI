@@ -7,8 +7,9 @@ namespace PIT{
     uint16_t Divisor = 65535;
 
     void Sleepd(double seconds){
+        double nsec = seconds * 100;
         double startTime = TimeSinceBoot;
-        while (TimeSinceBoot < startTime + seconds){
+        while (TimeSinceBoot < startTime + nsec){
             asm("hlt");
         }
     }

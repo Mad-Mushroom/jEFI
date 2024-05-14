@@ -4,6 +4,7 @@
 #include "../Interrupts/Interrupts.h"
 #include "IO.h"
 #include "Memory/Heap.h"
+#include "Scheduling/PIT/PIT.h"
 
 KernelInfo kernelInfo; 
 
@@ -83,6 +84,10 @@ void StartupStatusMessage(const char* Type, const char* Text, int Status){
             GlobalRenderer->CursorPosition.X = (GlobalRenderer->TargetFramebuffer->Width - 80);
             GlobalRenderer->Print(" [ "); GlobalRenderer->Print("ERROR", COLOR_RED); GlobalRenderer->Print(" ]");
         }
+        if(Status == 2){
+            GlobalRenderer->CursorPosition.X = (GlobalRenderer->TargetFramebuffer->Width - 80);
+            GlobalRenderer->Print(" [ "); GlobalRenderer->Print("WAIT", COLOR_LIGHT_GRAY); GlobalRenderer->Print(" ]\n");
+        }
     }
 }
 
@@ -91,43 +96,55 @@ jShell s = jShell();
 KernelInfo InitializeKernel(BootInfo* BootInfo){
     r = BasicRenderer(BootInfo->BootFramebuffer, BootInfo->PSF1Font);
     GlobalRenderer = &r; GlobalRenderer->Clear();
-    
+    StartupStatusMessage("INFO", "Initialized Renderer.", 0);
+
     GDTDescriptor GDTDescriptor;
     GDTDescriptor.Size = sizeof(GDT) - 1;
     GDTDescriptor.Offset = (uint64_t)&DefaultGDT;
     LoadGDT(&GDTDescriptor);
-    StartupStatusMessage("INFO", "GDT initialized.", 0);
+    StartupStatusMessage("INFO", "Initialized GDT.", 0);
 
     PrepareMemory(BootInfo);
-    StartupStatusMessage("INFO", "Memory initialized.", 0);
-
-    InitializeHeap((void*)0x0000100000000000, 0x10);
-    StartupStatusMessage("INFO", "Heap initialized.", 0);
+    StartupStatusMessage("INFO", "Initialized Memory.", 0);
 
     PrepareInterrupts();
-    StartupStatusMessage("INFO", "IDT initialized.", 0);
-
-    InitPS2Mouse();
-    StartupStatusMessage("INFO", "PS/2 Mouse initialized.", 0);
-
-    //PrepareACPI(BootInfo); // Not working!
-    StartupStatusMessage("INFO", "ACPI initialized.", 1);
+    StartupStatusMessage("INFO", "Initialized Interrupts.", 0);
 
     OutByte(PIC1_DATA, 0b11111000);
     OutByte(PIC2_DATA, 0b11101111);
-    StartupStatusMessage("INFO", "PIC initialized.", 0);
+    StartupStatusMessage("INFO", "Initialized PIC.", 0);
 
     asm ("sti");
+    PIT::SetDivisor(1000);
+    StartupStatusMessage("INFO", "Initialized PIT.", 0);
 
-    s = jShell();
-    MainShell = &s;
-    StartupStatusMessage("INFO", "Shell initialized.", 0);
-
-    StartupStatusMessage("INFO", "Done.", -1);
-
-    GlobalRenderer->Print("\n\nWelcome to "); GlobalRenderer->Print("j", COLOR_LIGHT_BLUE); GlobalRenderer->Print("OS", COLOR_BLUE); GlobalRenderer->Print("!\n\n");
+    GlobalRenderer->Print("\n");
+    StartupStatusMessage("INFO", "Waiting 3 seconds to continue...", 2);
+    PIT::Sleepd(1);
+    StartupStatusMessage("INFO", "Waiting 2 seconds to continue...", 2);
+    PIT::Sleepd(1);
+    StartupStatusMessage("INFO", "Waiting 1 seconds to continue...", 2);
+    PIT::Sleepd(1);
+    GlobalRenderer->Print("\n\nWelcome to "); GlobalRenderer->Print("jOS", COLOR_LIGHT_BLUE); GlobalRenderer->Print("!\n\n");
     GlobalRenderer->Print("jOS Version "); GlobalRenderer->Print(KERNEL_VERSION);
-    GlobalRenderer->Print("\nLicensed under GPL3; For more infos, type 'license';\n<https://www.gnu.org/licenses/gpl-3.0.en.html>\n");
+    GlobalRenderer->Print("\nLicensed under GPL3; For more infos, type 'license';\n<https://www.gnu.org/licenses/gpl-3.0.en.html>\n\n");
+    PIT::Sleepd(1);
+
+    InitializeHeap((void*)0x0000100000000000, 0x10);
+    StartupStatusMessage("INFO", "Initialized Heap.", 0);
+
+    InitPS2Mouse();
+    StartupStatusMessage("INFO", "Initialized PS/2 Mouse.", 0);
+
+    //PrepareACPI(BootInfo);
+    StartupStatusMessage("INFO", "Initialized ACPI.", 1);
+
+    //s = jShell();
+    MainShell = &s;
+    StartupStatusMessage("INFO", "Initialized Shell.", 0);
+
+    StartupStatusMessage("INFO", "Done.", 0);
+    GlobalRenderer->Print("Boot took: "); GlobalRenderer->Print(ToString(PIT::TimeSinceBoot/100)); GlobalRenderer->Print(" seconds.");
 
     return kernelInfo;
 }
