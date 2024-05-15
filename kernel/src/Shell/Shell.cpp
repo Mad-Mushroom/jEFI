@@ -20,6 +20,7 @@ void jShell::DrawTitlebar(){
 
 void jShell::Start(){
     GlobalRenderer->Clear();
+    MainKernel->BootState = 4;
     //GlobalRenderer->ClearColour = COLOR_DARK_GRAY;
     this->DrawTitlebar();
     GlobalRenderer->CursorPosition = {0, GlobalRenderer->TargetFramebuffer->Height-16};
@@ -28,6 +29,7 @@ void jShell::Start(){
     }
     GlobalRenderer->CursorPosition = {0, GlobalRenderer->TargetFramebuffer->Height-16};
     GlobalRenderer->Colour = COLOR_WHITE;
+    GlobalRenderer->ClearColour = COLOR_DARK_GRAY;
     GlobalRenderer->Print("jShell> ", COLOR_WHITE);
 }
 
@@ -38,6 +40,7 @@ void jShell::RunShell(){
     }
     GlobalRenderer->CursorPosition = {0, GlobalRenderer->TargetFramebuffer->Height-16};
     GlobalRenderer->Colour = COLOR_WHITE;
+    GlobalRenderer->ClearColour = COLOR_DARK_GRAY;
     GlobalRenderer->Print("jShell> ", COLOR_WHITE);
 }
 
@@ -118,7 +121,7 @@ void jShell::ParseCommand(){
         u_secs = (int)PIT::TimeSinceBoot/100 - (u_mins*60) - (u_hours*60*60);
         Print("OS: The J Operating System "); Print(OS_VERSION);
         Print("\nKernel: jKern "); Print(KERNEL_VERSION);
-        Print("\nUptime: "); Print(ToString(u_hours)); Print(" hours, "); Print(ToString(u_mins)); Print(" mins, "); Print(ToString(u_secs)); Print(" secs, ");
+        Print("\nUptime: "); if(u_hours > 0){ Print(ToString(u_hours)); Print(" hours, "); } if(u_mins > 0){ Print(ToString(u_mins)); Print(" mins, "); } Print(ToString(u_secs)); Print(" secs");
         Print("\nShell: jShell "); Print(SHELL_VERSION);
         Print("\nResolution: "); Print(ToString(GlobalRenderer->TargetFramebuffer->Width)); Print("x"); Print(ToString(GlobalRenderer->TargetFramebuffer->Height));
         Print("\n\n");
@@ -139,6 +142,7 @@ void jShell::ParseCommand(){
 }
 
 void jShell::HandleKeyPress(uint8_t Scancode){
+    if(MainKernel->BootState < 4) return;
     switch (Scancode){
         case LeftShift:
             this->IsLeftShiftPressed = true;

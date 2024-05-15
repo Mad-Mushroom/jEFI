@@ -44,8 +44,11 @@ class BasicRenderer{
     void ClearMouseCursor(uint8_t* MouseCursor, Point Position);
     bool MouseDrawn;
     void TickCursor();
+    void ScrollUp(int lines);
+    void ScrollCharUp(int lines);
     private:
     bool TextCursorShown;
+    void ScrollSingleCharUp();
 };
 
 extern BasicRenderer* GlobalRenderer;

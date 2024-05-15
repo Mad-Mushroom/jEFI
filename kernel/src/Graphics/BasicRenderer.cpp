@@ -124,7 +124,11 @@ void BasicRenderer::Print(const char* String, unsigned int Color){
     unsigned int OldColor = GlobalRenderer->Colour;
     GlobalRenderer->Colour = Color;
     while(*Char != 0){
-        if(*Char == '\n') GlobalRenderer->Next();
+        if(*Char == '\n'){
+            GlobalRenderer->Next();
+            int tmp = (int)TargetFramebuffer->Height/16;
+            if(CursorPosition.Y/16 >= tmp-1) ScrollSingleCharUp();
+        }
         else if(*Char == '\a'){
             for(int x=0; x<8; x++){
                 for(int y=0; y<16; y++){
@@ -186,4 +190,27 @@ void BasicRenderer::TickCursor(){
         CursorPosition.X--;
         TextCursorShown = true;
     }
+}
+
+void BasicRenderer::ScrollUp(int lines){
+    for(int CurrentLine=0; CurrentLine<lines; CurrentLine++){
+        for(int y=1; y<TargetFramebuffer->Height; y++){
+            for(int x=0; x<TargetFramebuffer->Width; x++){
+                PutPix(x, y-1, GetPix(x, y));
+            }
+        }
+    }
+}
+
+void BasicRenderer::ScrollSingleCharUp(){
+    for(int y=16; y<TargetFramebuffer->Height; y++){
+        for(int x=0; x<TargetFramebuffer->Width; x++){
+            PutPix(x, y-16, GetPix(x, y));
+        }
+    }
+    CursorPosition.Y -= 16;
+}
+
+void BasicRenderer::ScrollCharUp(int lines){
+    for(int i=0; i<lines; i++) ScrollSingleCharUp();
 }

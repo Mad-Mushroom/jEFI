@@ -96,6 +96,11 @@ void StartupStatusMessage(const char* Type, const char* Text, int Status){
             GlobalRenderer->Print(" [ "); GlobalRenderer->Print("WAIT", COLOR_LIGHT_GRAY); GlobalRenderer->Print(" ]\n");
         }
     }
+
+    if(Status == -2){
+        GlobalRenderer->CursorPosition.X = (GlobalRenderer->TargetFramebuffer->Width - 80);
+        GlobalRenderer->Print(" [ "); GlobalRenderer->Print("N/A", COLOR_DARK_GRAY); GlobalRenderer->Print(" ]\n");
+    }
 }
 
 void KernelStuff::Loop(){
@@ -153,7 +158,7 @@ KernelInfo InitializeKernel(BootInfo* BootInfo){
 
     //PrepareACPI(BootInfo);
     StartupStatusMessage("INFO", "Initialized ACPI.", 1);
-
+    
     //s = jShell();
     MainShell = &s;
     StartupStatusMessage("INFO", "Initialized Shell.", 0);
