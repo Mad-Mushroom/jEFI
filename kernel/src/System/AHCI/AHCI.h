@@ -3,7 +3,6 @@
 #include "../PCI/PCI.h"
 
 namespace AHCI {
-
     #define ATA_DEV_BUSY 0x80
     #define ATA_DEV_DRQ 0x08
     #define ATA_CMD_READ_DMA_EX 0x25
@@ -156,5 +155,8 @@ namespace AHCI {
         void ProbePorts();
         Port* Ports[32];
         uint8_t PortCount;
+        unsigned char* ReadPort(int Port, uint64_t Length, int StartSector = 0);
     };
 }
+
+extern AHCI::AHCIDriver* GlobalAHCI;

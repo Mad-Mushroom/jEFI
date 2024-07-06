@@ -20,6 +20,40 @@ int strlength(const char* str){
     return length;
 }
 
+int atoi(const char* str){
+    if (str == nullptr) {
+        return 0; // Handle null pointer
+    }
+
+    int result = 0;
+    bool negative = false;
+    int i = 0;
+
+    // Skip whitespace
+    while (str[i] == ' ' || str[i] == '\t' || str[i] == '\n' || str[i] == '\r' || str[i] == '\f' || str[i] == '\v') {
+        ++i;
+    }
+
+    // Handle possible sign
+    if (str[i] == '-') {
+        negative = true;
+        ++i;
+    } else if (str[i] == '+') {
+        ++i;
+    }
+
+    // Convert characters to integer
+    while (str[i] != '\0') {
+        if (str[i] < '0' || str[i] > '9') {
+            break; // Stop converting if a non-digit character is found
+        }
+        result = result * 10 + (str[i] - '0');
+        ++i;
+    }
+
+    return negative ? -result : result;
+}
+
 char UIntToStringOutput[128];
 const char* ToString(uint64_t Value){
     uint8_t Size;

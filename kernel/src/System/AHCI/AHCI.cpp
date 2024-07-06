@@ -4,6 +4,8 @@
 #include "../Memory/Heap.h"
 #include "../Paging/PageFrameAllocator.h"
 
+AHCI::AHCIDriver* GlobalAHCI;
+
 namespace AHCI{
 
     #define HBA_PORT_DEV_PRESENT 0x3
@@ -168,8 +170,8 @@ namespace AHCI{
 
     AHCIDriver::AHCIDriver(PCI::PCIDeviceHeader* PCIBaseAddress){
         this->PCIBaseAddress = PCIBaseAddress;
-        GlobalRenderer->Print("AHCI Driver instance initialized");
-        GlobalRenderer->Next();
+        //GlobalRenderer->Print("AHCI Driver instance initialized");
+        //GlobalRenderer->Next();
 
         ABAR = (HBAMemory*)((PCI::PCIHeader0*)PCIBaseAddress)->BAR5;
 
@@ -194,5 +196,15 @@ namespace AHCI{
 
     AHCIDriver::~AHCIDriver(){
 
+    }
+
+    unsigned char* AHCIDriver::ReadPort(int PortNumber, uint64_t Length, int StartSector){
+        Port* Port = Ports[PortNumber];
+        Port->Configure();
+        Port->Buffer = (uint8_t*)GlobalAllocator.RequestPage();
+        Memset(Port->Buffer, 0, 0x1000);
+        if(Length >= 256) Port->Read(StartSector, Length/256, Port->Buffer);
+        else Port->Read(StartSector, 1, Port->Buffer);
+        return Port->Buffer;
     }
 }

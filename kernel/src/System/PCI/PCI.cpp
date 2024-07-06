@@ -15,7 +15,7 @@ namespace PCI{
         if (PCIDeviceHdr->DeviceID == 0) return;
         if (PCIDeviceHdr->DeviceID == 0xFFFF) return;
 
-        GlobalRenderer->Print(GetVendorName(PCIDeviceHdr->VendorID));
+        /*GlobalRenderer->Print(GetVendorName(PCIDeviceHdr->VendorID));
         GlobalRenderer->Print(" / ");
         GlobalRenderer->Print(GetDeviceName(PCIDeviceHdr->VendorID, PCIDeviceHdr->DeviceID));
         GlobalRenderer->Print(" / ");
@@ -24,7 +24,7 @@ namespace PCI{
         GlobalRenderer->Print(GetSubclassName(PCIDeviceHdr->Class, PCIDeviceHdr->Subclass));
         GlobalRenderer->Print(" / ");
         GlobalRenderer->Print(GetProgIFName(PCIDeviceHdr->Class, PCIDeviceHdr->Subclass, PCIDeviceHdr->ProgIF));
-        GlobalRenderer->Next();
+        GlobalRenderer->Next();*/
 
         switch (PCIDeviceHdr->Class){
             case 0x01: // mass storage controller
@@ -32,7 +32,8 @@ namespace PCI{
                     case 0x06: //Serial ATA 
                         switch (PCIDeviceHdr->ProgIF){
                             case 0x01: //AHCI 1.0 Device
-                                new AHCI::AHCIDriver(PCIDeviceHdr);
+                                GlobalAHCI = new AHCI::AHCIDriver(PCIDeviceHdr);
+                                //GlobalAHCI = &a;
                         }
                 }
         }

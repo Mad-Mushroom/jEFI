@@ -5,7 +5,7 @@
 extern "C" void KernelStart(BootInfo* BootInfo){
     KernelInfo KernelInfo = InitializeKernel(BootInfo);
     MainShell->Start();
-    MainShell->Print("\n");
+    //GlobalRenderer->Print("\nPress F1 to start Shell.\nPress F2 to start Graphical User Interface.\n");
     while(true){
         MainKernel->Loop();
     }

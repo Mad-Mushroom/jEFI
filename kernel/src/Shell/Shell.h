@@ -6,6 +6,8 @@
 #include "../System/Memory/Memory.h"
 #include "../System/KernelUtil.h"
 #include "../System/Scheduling/PIT/PIT.h"
+#include "../System/PCI/PCI.h"
+#include "../System/AHCI/AHCI.h"
 
 #define SHELL_VERSION "0.1.2"
 
@@ -17,9 +19,11 @@ public:
     void Start();
     void ParseCommand();
     void Print(const char* Text, uint32_t Color = 0xffffffff);
+    void PutChar(char chr, uint32_t Color = 0xffffffff);
     void Clear(uint32_t Color = 0x00000000);
 private:
     void DrawTitlebar();
+    void DisplayInfo();
     bool IsLeftShiftPressed;
     bool IsRightShiftPressed;
     char CommandBuffer[16384];

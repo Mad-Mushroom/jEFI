@@ -70,14 +70,6 @@ void PrepareInterrupts(){
     RemapPIC();
 }
 
-void PrepareACPI(BootInfo* BootInfo){
-    ACPI::SDTHeader* XSDT = (ACPI::SDTHeader*)(BootInfo->RSDP->XSDTAddress);
-    
-    ACPI::MCFGHeader* MCFG = (ACPI::MCFGHeader*)ACPI::FindTable(XSDT, (char*)"MCFG");
-
-    PCI::EnumeratePCI(MCFG);
-}
-
 void StartupStatusMessage(const char* Type, const char* Text, int Status){
     GlobalRenderer->Print("[ "); GlobalRenderer->Print(Type, COLOR_GRAY); GlobalRenderer->Print(" ] ");
     GlobalRenderer->Print("[ "); GlobalRenderer->Print(ToString(PIT::TimeSinceBoot/100), COLOR_DARK_GRAY); GlobalRenderer->Print(" ] ");
@@ -101,6 +93,16 @@ void StartupStatusMessage(const char* Type, const char* Text, int Status){
         GlobalRenderer->CursorPosition.X = (GlobalRenderer->TargetFramebuffer->Width - 80);
         GlobalRenderer->Print(" [ "); GlobalRenderer->Print("N/A", COLOR_DARK_GRAY); GlobalRenderer->Print(" ]\n");
     }
+}
+
+void PrepareACPI(BootInfo* BootInfo){
+    ACPI::SDTHeader* XSDT = (ACPI::SDTHeader*)(BootInfo->RSDP->XSDTAddress);
+    
+    ACPI::MCFGHeader* MCFG = (ACPI::MCFGHeader*)ACPI::FindTable(XSDT, (char*)"MCFG");
+
+    PCI::EnumeratePCI(MCFG);
+    StartupStatusMessage("INFO", "Initialized PCI.", 0);
+    StartupStatusMessage("INFO", "Initialized AHCI.", 0);
 }
 
 void KernelStuff::Loop(){
@@ -156,15 +158,15 @@ KernelInfo InitializeKernel(BootInfo* BootInfo){
     InitPS2Mouse();
     StartupStatusMessage("INFO", "Initialized PS/2 Mouse.", 0);
 
-    //PrepareACPI(BootInfo);
-    StartupStatusMessage("INFO", "Initialized ACPI.", 1);
+    PrepareACPI(BootInfo);
+    StartupStatusMessage("INFO", "Initialized ACPI.", 0);
     
     //s = jShell();
     MainShell = &s;
     StartupStatusMessage("INFO", "Initialized Shell.", 0);
 
     StartupStatusMessage("INFO", "Done.", 0);
-    GlobalRenderer->Print("\nBoot took: "); GlobalRenderer->Print(ToString(PIT::TimeSinceBoot/100)); GlobalRenderer->Print(" seconds.");
+    //GlobalRenderer->Print("\nBoot took: "); GlobalRenderer->Print(ToString(PIT::TimeSinceBoot/100)); GlobalRenderer->Print(" seconds.");
     MainKernel->BootState = 3;
     PIT::Sleepd(1);
 
